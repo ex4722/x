@@ -26,6 +26,7 @@ RED  = ( 255,0,0)
 TANK_SCALE = 1
 TURRET_SCALE = 1.5
 BALL_SCALE = .08
+CAP = 37
 GRAVITY = 9.81 /10
 
 pg.font.init()
@@ -167,9 +168,7 @@ class Turret(pg.sprite.Sprite):
             return 180
         return int(angle)
 
-    # IT WORKSSSSSSSSSSSSSSSSSSSSSSSS
     def follow_mouse(self):
-        # print(self.get_angle())
         self.move_turret_absolute(self.get_angle())
 
 
@@ -200,10 +199,12 @@ class Turret(pg.sprite.Sprite):
                 x = self.right_anchor[0] - self.ball_x()
                 y = self.right_anchor[1] - self.ball_y() - self.master_img.get_height() /2
 
-            # CAP at 300, 37 is max 45 
+            # CAP at 300, 37 is max 45 degreee
             # ball = Cannon_balls( x,y, self.get_angle(), self.get_distance() / 18)
-            ball = Cannon_balls( x,y, self.get_angle(), self.get_distance() / 25)
+
+            ball = Cannon_balls( x,y, self.get_angle(), self.get_distance())
             # ball = Cannon_balls( x,y, self.get_angle(), 37 )
+
             balls_group.add(ball)
             self.cannon_balls -= 1
             explosion = Explode( x,y )
@@ -214,16 +215,18 @@ class Turret(pg.sprite.Sprite):
     def debug_dump(self):
         print(f"ANGLE {self.get_angle()} FORCE { self.get_distance()}")
 
-        x = self.get_distance() * f_cos(self.get_angle())
-        x_cord = self.left_anchor[0] +  x if  (x <= (CAP * 25 * f_cos(self.get_angle()) )) else CAP * 25 * f_cos(self.get_angle()) 
+        distance = self.get_distance() if self.get_distance() < 25 * CAP else 25 * CAP
+        x_cord = self.left_anchor[0] + (  distance * f_cos(self.get_angle()) )
         pg.draw.line(screen, CYAN, self.left_anchor , ( x_cord, self.left_anchor[1]  ) )
 
-        # y = self.get_distance() * f_sin(self.get_angle())
-        # y_cord = self.left_anchor[1] -   y  if y >= CAP * 25 else CAP * 25
-        # pg.draw.line(screen, CYAN, self.left_anchor , ( self.left_anchor[0], (   y_cord)  )) 
+        y_cord = self.left_anchor[1] -  ( distance * f_sin(self.get_angle())  ) 
+        pg.draw.line(screen, CYAN, self.left_anchor , ( self.left_anchor[0], (   y_cord)  )) 
 
         pg.draw.line(screen, CYAN, self.left_anchor , pg.mouse.get_pos() )
-        draw_text( str(self.get_angle()), CYAN, (288, 839) )
+
+
+        # draw_text( str(self.get_angle()), CYAN, (288, 839) )
+        draw_text( str(self.get_angle()), CYAN, pg.mouse.get_pos())
 
         # draw_text( str(self.get_distance() * better_cos(self.get_angle())), CYAN, (self.left_anchor , ( self.left_anchor[0] + 100, (   self.left_anchor[1] - self.get_distance() * better_sin(self.get_angle())  )) ))
 
@@ -242,10 +245,12 @@ class Cannon_balls(pg.sprite.Sprite):
 
         #### CAP FORCE AT 300
         # CAPPED FORCE
-        if force > 37:
-            force = 37
 
-        # Velocty crap
+        force /= 25
+        if force > CAP:
+            force = CAP
+
+        # Velocity crap
         self.x_vel = (f_cos(angle) * force) * self.direction
         self.y_vel = -(f_sin(angle) * force)
         print(force)
@@ -267,7 +272,7 @@ class Cannon_balls(pg.sprite.Sprite):
 class Explode(pg.sprite.Sprite):
     def __init__(self, x, y ):
         pg.sprite.Sprite.__init__(self)
-        # TIcks for animation speed
+        # Ticks for animation speed
         self.frame_index = 0
         self.tick_counter = 0
         self.image = explosion_images[self.frame_index]
@@ -313,9 +318,6 @@ while active:
     explode_group.draw(screen)
     explode_group.update()
     pg.draw.line(screen, RED, ( 820,SCREEN_HIG) , ( 820,0))
-
-    pg.draw.circle( screen, RED, ( turret1.rect.x ,turret1.rect.y), 650, 1)
-
 
     # print(turret1.get_distance())
     # turret1.move_turret(1)

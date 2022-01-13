@@ -28,6 +28,8 @@ TURRET_SCALE = 1.5
 BALL_SCALE = .08
 CAP = 36
 GRAVITY = 9.81 /10
+GAME_START = False
+GDB  = False
 
 pg.font.init()
 FONT = pg.font.SysFont(None, 32)
@@ -65,6 +67,23 @@ def f_sin(degree):
 def f_cos(degree):
     return (math.cos((math.pi / 180 )  * degree))
 
+class Button(pg.sprite.Sprite):
+    def __init__(self, x,y,scale):
+        pg.sprite.Sprite.__init__(self)
+        img = pg.image.load("./img/buttons/PlayButton.png").convert_alpha()
+        self.img = pg.transform.scale( img, (img.get_width() * scale , img.get_height() * scale))
+        self.rect = self.img.get_rect()
+        self.rect.center = ( x,y)
+    def draw(self):
+        screen.blit( self.img, self.rect) 
+    def update(self):
+        global GAME_START
+        if ( self.rect.collidepoint(pg.mouse.get_pos())):
+            print("COLLISON")
+            if ( pg.mouse.get_pressed()[0]):
+                GAME_START = True
+
+
 
 # Game Classes 
 class Tank(pg.sprite.Sprite):
@@ -85,7 +104,8 @@ class Tank(pg.sprite.Sprite):
         # Img is graphical, rect is location
         screen.blit( self.img, self.rect) 
         # Debug, Prints hitboxes
-        pg.draw.rect(screen, RED, self.rect,2)
+        if GDB:
+            pg.draw.rect(screen, RED, self.rect,2)
     def move(self):
         # Tank don't need to move
         pass
@@ -121,7 +141,8 @@ class Turret(pg.sprite.Sprite):
     def draw(self):
         # Img is graphical, rect is location
         screen.blit( self.img, self.rect) 
-        pg.draw.rect(screen, CYAN, self.rect,2)
+        if GDB:
+            pg.draw.rect(screen, CYAN, self.rect,2)
 
     def set_origin(self):
         # Moving moves the top left corner only, change to center;; NM Change to top right
@@ -258,7 +279,8 @@ class Cannon_balls(pg.sprite.Sprite):
 
 
     def update(self):
-        pg.draw.rect(screen, CYAN, self.rect,2)
+        if GDB:
+            pg.draw.rect(screen, CYAN, self.rect,2)
         self.y_vel += GRAVITY
         # Direction matters
         dx  = self.x_vel * self.direction
@@ -304,25 +326,40 @@ tank_y = 850
 tank1 = Tank(tank_x,tank_y,"yellow")
 # Add a bit to the Y so anchor point ain't screwed up
 turret1 = Turret( tank1.rect.midtop[0],  tank1.rect.midtop[1]+30,"yellow")
+
+start_button = Button(  SCREEN_WID/2,SCREEN_HIG/2, .5 )
+
+
 active = True
+
+
 while active:
     time.tick(FPS)
-    clean_bg()
-    tank1.draw()
-    turret1.follow_mouse()
-    turret1.draw()
-    turret1.debug_dump()
 
-    balls_group.draw(screen)
-    balls_group.update()
+    if GAME_START == False:
+        clean_bg()
+        pg.draw.rect(screen, RED, [SCREEN_WID/2 -(300/2),SCREEN_HIG/2, 300, 200] )
+        start_button.draw()
+        start_button.update()
+    else:
+        clean_bg()
+        tank1.draw()
+        turret1.follow_mouse()
+        turret1.draw()
+        if ( GDB):
+            turret1.debug_dump()
 
-    explode_group.draw(screen)
-    explode_group.update()
-    pg.draw.line(screen, RED, ( 820,SCREEN_HIG) , ( 820,0))
+        balls_group.draw(screen)
+        balls_group.update()
+
+        explode_group.draw(screen)
+        explode_group.update()
 
     # print(turret1.get_distance())
     # turret1.move_turret(1)
     # turret1.get_angle()
+
+
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_SPACE:
@@ -330,5 +367,9 @@ while active:
                 # turret1.ball_x()
                 # get_mouse()
                 turret1.shoot()
+            if event.unicode == "!":
+                GDB = not GDB 
+
+
     pg.display.update()
 

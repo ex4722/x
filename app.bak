@@ -1,0 +1,112 @@
+import pygame as pg
+
+
+'''NOTES
+Screen is 0 top and 0 Left, grows positive down and right
+'''
+
+# Screen Varibles 
+SCREEN_RATIO = .6
+SCREEN_WID = 2000
+SCREEN_HIG = SCREEN_WID * SCREEN_RATIO
+screen = pg.display.set_mode((SCREEN_WID, SCREEN_HIG))
+pg.display.set_caption("TANKED")
+FPS = 30
+time = pg.time.Clock()
+
+# Colors 
+BASE = ( 0,43,54)
+CYAN = ( 38,139,210)
+RED  = ( 255,0,0)
+
+# Game Varibles 
+TANK_SCALE = 2
+TURRET_SCALE = 3
+GRAVITY = .9
+
+
+# Helper Function
+# Redraw in each loop
+def clean_bg():
+    screen.fill(BASE)
+
+def get_mouse():
+    print(pg.mouse.get_pos())
+
+# Game Classes 
+class Tank():
+    def __init__(self, x, y, color):
+        # Load img, gen rect for boundries, scale img
+        img = pg.image.load("./images/tanks/outputfolder/tank_model_1_1_b.png").convert_alpha()
+        self.img = pg.transform.scale( img, (img.get_width() * TANK_SCALE , img.get_height() * TANK_SCALE))
+        # self.rect = self.img.get_bounding_rect()   # PYGAME STUPID, FIX:find  -name "*.png" -exec convert {} -trim outputfolder/{} \;
+        self.rect = self.img.get_rect()
+        self.rect.center = ( x,y)
+
+    def update(self):
+        # Calls own functions, declutters the final code
+        pass 
+    def draw(self):
+        # Img is graphical, rect is location
+        screen.blit( self.img, self.rect) 
+        # Debug, Prints hitboxes
+        pg.draw.rect(screen, RED, self.rect,2)
+    def move(self):
+        # Tank don't need to move
+        pass
+
+class Turret():
+    # XY is for the left turret NOT center
+    def __init__(self, x, y, color):
+        # Load img, gen rect for boundries, scale img
+        img = pg.image.load("./images/tanks/outputfolder/tank_model_1_2_w1.png").convert_alpha()
+        self.img = pg.transform.scale( img, (img.get_width() * TURRET_SCALE, img.get_height() * TURRET_SCALE))
+        self.rect = img.get_rect()
+        self.rect.midleft= ( x,y)
+        self.left_origin = (x,y)
+
+
+        self.vel_y = 0
+
+    def update(self):
+        # Calls own functions, declutters the final code
+        pass 
+    def draw(self):
+        # Img is graphical, rect is location
+        screen.blit( self.img, self.rect) 
+        pg.draw.rect(screen, CYAN, self.rect,2)
+    def set_origin(self):
+        # Moving moves the top left corner only, change to center;; NM Change to top right
+        pass
+    # def move(self):
+        # Use delta XY for collision calcs, NO NEED FOR COLLISIONS
+        # dx = 0
+        # dy = 0
+
+
+
+
+
+
+# class Shell():
+# class Crate():
+# class Explode():
+
+tank_x = 400
+tank_y = 500
+
+tank1 = Tank(tank_x,tank_y,"yellow")
+turret1 = Turret( tank1.rect.midtop[0],  tank1.rect.midtop[1],"yellow")
+active = True
+while active:
+    time.tick(FPS)
+    clean_bg()
+    tank1.draw()
+    turret1.draw()
+    for event in pg.event.get():
+        if event.type == pg.KEYDOWN:
+            get_mouse()
+
+
+    pg.display.update()
+

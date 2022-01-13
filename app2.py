@@ -26,7 +26,7 @@ RED  = ( 255,0,0)
 TANK_SCALE = 1
 TURRET_SCALE = 1.5
 BALL_SCALE = .08
-CAP = 37
+CAP = 36
 GRAVITY = 9.81 /10
 
 pg.font.init()
@@ -215,20 +215,21 @@ class Turret(pg.sprite.Sprite):
     def debug_dump(self):
         print(f"ANGLE {self.get_angle()} FORCE { self.get_distance()}")
 
-        distance = self.get_distance() if self.get_distance() < 25 * CAP else 25 * CAP
-        x_cord = self.left_anchor[0] + (  distance * f_cos(self.get_angle()) )
+        hypo_force = self.get_distance() if self.get_distance() < 25 * CAP else 25 * CAP
+        x_cord = self.left_anchor[0] + (  hypo_force * f_cos(self.get_angle()) )
         pg.draw.line(screen, CYAN, self.left_anchor , ( x_cord, self.left_anchor[1]  ) )
 
-        y_cord = self.left_anchor[1] -  ( distance * f_sin(self.get_angle())  ) 
+        y_cord = self.left_anchor[1] -  ( hypo_force * f_sin(self.get_angle())  ) 
         pg.draw.line(screen, CYAN, self.left_anchor , ( self.left_anchor[0], (   y_cord)  )) 
 
         pg.draw.line(screen, CYAN, self.left_anchor , pg.mouse.get_pos() )
 
 
-        # draw_text( str(self.get_angle()), CYAN, (288, 839) )
-        draw_text( str(self.get_angle()), CYAN, pg.mouse.get_pos())
+        draw_text( str(self.get_angle()), CYAN, pg.mouse.get_pos()   )
 
-        # draw_text( str(self.get_distance() * better_cos(self.get_angle())), CYAN, (self.left_anchor , ( self.left_anchor[0] + 100, (   self.left_anchor[1] - self.get_distance() * better_sin(self.get_angle())  )) ))
+        draw_text( str("%.1f" % (hypo_force * f_cos(self.get_angle()))), CYAN, ( self.left_anchor[0] + hypo_force * f_cos(self.get_angle()) * .5 , self.left_anchor[1] )   )
+
+        draw_text( str("%.1f" % (hypo_force * f_sin(self.get_angle()))), CYAN, ( self.left_anchor[0] -65, self.left_anchor[1] - ( hypo_force * f_sin(self.get_angle()) * .5  )   ))
 
 
 

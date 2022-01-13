@@ -213,8 +213,15 @@ class Turret(pg.sprite.Sprite):
 
     def debug_dump(self):
         print(f"ANGLE {self.get_angle()} FORCE { self.get_distance()}")
-        pg.draw.line(screen, CYAN, self.left_anchor , ( self.left_anchor[0] + (self.get_distance() * f_cos(self.get_angle())  ), self.left_anchor[1]  ) )
-        pg.draw.line(screen, CYAN, self.left_anchor , ( self.left_anchor[0], (   self.left_anchor[1] - self.get_distance() * f_sin(self.get_angle())  )) )
+
+        x = self.get_distance() * f_cos(self.get_angle())
+        x_cord = self.left_anchor[0] +  x if  (x <= (CAP * 25 * f_cos(self.get_angle()) )) else CAP * 25 * f_cos(self.get_angle()) 
+        pg.draw.line(screen, CYAN, self.left_anchor , ( x_cord, self.left_anchor[1]  ) )
+
+        # y = self.get_distance() * f_sin(self.get_angle())
+        # y_cord = self.left_anchor[1] -   y  if y >= CAP * 25 else CAP * 25
+        # pg.draw.line(screen, CYAN, self.left_anchor , ( self.left_anchor[0], (   y_cord)  )) 
+
         pg.draw.line(screen, CYAN, self.left_anchor , pg.mouse.get_pos() )
         draw_text( str(self.get_angle()), CYAN, (288, 839) )
 

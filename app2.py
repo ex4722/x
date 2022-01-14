@@ -1,6 +1,6 @@
 import pygame as pg
 # Used for vector calcs
-import math
+import math, random
 
 
 '''NOTES
@@ -29,7 +29,15 @@ BALL_SCALE = .08
 CAP = 36
 GRAVITY = 9.81 /10
 GAME_START = False
-GDB  = False
+GDB  = True 
+
+
+# GAME STATE 
+SHOTS_LEFT = 0
+CRATES_HIT = 0
+# NEed more?
+CRATE = True
+
 
 pg.font.init()
 FONT = pg.font.SysFont(None, 32)
@@ -228,8 +236,8 @@ class Turret(pg.sprite.Sprite):
 
             balls_group.add(ball)
             self.cannon_balls -= 1
-            explosion = Explode( x,y )
-            explode_group.add(explosion)
+            # explosion = Explode( x,y )
+            # explode_group.add(explosion)
 
             # Have explosin animation 
 
@@ -290,8 +298,18 @@ class Cannon_balls(pg.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
+        if ( self.rect.y > 850):
+            explosion = Explode( self.rect.x, self.rect.y )
+            explode_group.add(explosion)
+            self.kill()
 
-# class Crate():
+        for c in crate_group:
+            if pg.sprite.collide_rect(self, c):
+                explosion = Explode( self.rect.x, self.rect.y )
+                explode_group.add(explosion)
+                self.kill()
+
+
 class Explode(pg.sprite.Sprite):
     def __init__(self, x, y ):
         pg.sprite.Sprite.__init__(self)
@@ -312,13 +330,45 @@ class Explode(pg.sprite.Sprite):
 
             # 0 Based arrays :)
             if self.frame_index > len(explosion_images) -1:
+                self.remove()
                 self.kill()
             else:
                 self.image = explosion_images[self.frame_index]
 
 
+class Crate(pg.sprite.Sprite):
+    def __init__(self, x,y,scale):
+        pg.sprite.Sprite.__init__(self)
+        img = pg.image.load("./img/crtes/Crate game assets/Crates etc/CrateSmall.png").convert_alpha()
+        self.image = pg.transform.scale( img, (img.get_width() * scale , img.get_height() * scale))
+        self.rect = self.image.get_rect()
+        self.rect.center = ( x,y)
+    def draw(self):
+        screen.blit( self.image, self.rect) 
+
+
+    def update(self):
+        global CRATE, CRATES_HIT
+        for blow in explode_group:
+            if pg.sprite.collide_rect(self, blow):
+                print("HIT")
+                CRATE = True
+                CRATES_HIT += 1
+                self.remove()
+                self.kill()
+
+        for can in balls_group:
+            if pg.sprite.collide_rect(self, can):
+                CRATE = True
+                CRATES_HIT += 1
+                print("HIT")
+                self.remove()
+                self.kill()
+
+
 balls_group = pg.sprite.Group()
 explode_group = pg.sprite.Group()
+crate_group = pg.sprite.Group()
 
 tank_x = 150
 tank_y = 850
@@ -327,6 +377,8 @@ tank1 = Tank(tank_x,tank_y,"yellow")
 # Add a bit to the Y so anchor point ain't screwed up
 turret1 = Turret( tank1.rect.midtop[0],  tank1.rect.midtop[1]+30,"yellow")
 
+# crate = Crate( 400,tank_y, .3)
+# crate_group.add(crate)
 start_button = Button(  SCREEN_WID/2,SCREEN_HIG/2, .5 )
 
 
@@ -342,11 +394,20 @@ while active:
         start_button.draw()
         start_button.update()
     else:
+
+        if CRATE:
+            CRATE = False
+            x_addr =  tank_x +50 + ( SCREEN_WID - tank_x - 200) * random.uniform(0, 1)
+            crate = Crate( x_addr , tank_y, .3)
+            crate_group.add(crate)
+            print(CRATES_HIT)
+
+
         clean_bg()
         tank1.draw()
         turret1.follow_mouse()
         turret1.draw()
-        if ( GDB):
+        if (GDB):
             turret1.debug_dump()
 
         balls_group.draw(screen)
@@ -355,10 +416,8 @@ while active:
         explode_group.draw(screen)
         explode_group.update()
 
-    # print(turret1.get_distance())
-    # turret1.move_turret(1)
-    # turret1.get_angle()
-
+        crate_group.draw(screen)
+        crate_group.update()
 
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
@@ -369,7 +428,4 @@ while active:
                 turret1.shoot()
             if event.unicode == "!":
                 GDB = not GDB 
-
-
     pg.display.update()
-

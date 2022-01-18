@@ -12,6 +12,7 @@ https://stackoverflow.com/questions/4183208/how-do-i-rotate-an-image-around-its-
 SCREEN_RATIO = .5
 SCREEN_WID = 2000
 SCREEN_HIG = SCREEN_WID * SCREEN_RATIO
+
 screen = pg.display.set_mode((SCREEN_WID, SCREEN_HIG))
 pg.display.set_caption("TANKED")
 FPS = 60
@@ -23,8 +24,12 @@ CYAN = ( 38,139,210)
 RED  = ( 255,0,0)
 
 # Game Varibles 
-TANK_SCALE = 1
-TURRET_SCALE = 1.5
+# TANK_SCALE = 1
+# TURRET_SCALE = 1.5
+
+TANK_SCALE = .5
+TURRET_SCALE = .75
+
 BALL_SCALE = .08
 CAP = 36
 GRAVITY = 9.81 /10
@@ -98,7 +103,8 @@ class Tank(pg.sprite.Sprite):
     def __init__(self, x, y, color):
         pg.sprite.Sprite.__init__(self)
         # Load img, gen rect for boundries, scale img
-        img = pg.image.load("./images/tanks/outputfolder/tank_model_1_1_b.png").convert_alpha()
+        # img = pg.image.load("./images/tanks/outputfolder/tank_model_1_1_b.png").convert_alpha()
+        img = pg.image.load("/tmp/tank.png").convert_alpha()
         self.img = pg.transform.scale( img, (img.get_width() * TANK_SCALE , img.get_height() * TANK_SCALE))
 
         # self.rect = self.img.get_bounding_rect()   # PYGAME STUPID, FIX:find  -name "*.png" -exec convert {} -trim outputfolder/{} \;
@@ -127,7 +133,8 @@ class Turret(pg.sprite.Sprite):
 
         # Load img, gen rect for boundries, scale img
         # img = pg.image.load("./images/tanks/outputfolder/tank_model_1_2_w1.png").convert_alpha()
-        img = pg.image.load("./images/tanks/outputfolder/tank_model_1_3_w1.png").convert_alpha()
+        # img = pg.image.load("./images/tanks/outputfolder/tank_model_1_3_w1.png").convert_alpha()
+        img = pg.image.load("/tmp/turret.png").convert_alpha()
         self.master_img = pg.transform.scale( img, (img.get_width() * TURRET_SCALE, img.get_height() * TURRET_SCALE))
         self.img = pg.transform.scale( img, (img.get_width() * TURRET_SCALE, img.get_height() * TURRET_SCALE))
 

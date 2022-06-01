@@ -83,7 +83,7 @@ def f_cos(degree):
 class Button(pg.sprite.Sprite):
     def __init__(self, x,y,scale):
         pg.sprite.Sprite.__init__(self)
-        img = pg.image.load("./img/buttons/PlayButton.png").convert_alpha()
+        img = pg.image.load("./img/buttons/black_button.png").convert_alpha()
         self.img = pg.transform.scale( img, (img.get_width() * scale , img.get_height() * scale))
         self.rect = self.img.get_rect()
         self.rect.center = ( x,y)
@@ -103,8 +103,8 @@ class Tank(pg.sprite.Sprite):
     def __init__(self, x, y, color):
         pg.sprite.Sprite.__init__(self)
         # Load img, gen rect for boundries, scale img
-        # img = pg.image.load("./images/tanks/outputfolder/tank_model_1_1_b.png").convert_alpha()
-        img = pg.image.load("/tmp/tank.png").convert_alpha()
+        img = pg.image.load("./images/tanks/outputfolder/tank_model_1_1_b.png").convert_alpha()
+        # img = pg.image.load("/tmp/tank.png").convert_alpha()
         self.img = pg.transform.scale( img, (img.get_width() * TANK_SCALE , img.get_height() * TANK_SCALE))
 
         # self.rect = self.img.get_bounding_rect()   # PYGAME STUPID, FIX:find  -name "*.png" -exec convert {} -trim outputfolder/{} \;
@@ -133,8 +133,8 @@ class Turret(pg.sprite.Sprite):
 
         # Load img, gen rect for boundries, scale img
         # img = pg.image.load("./images/tanks/outputfolder/tank_model_1_2_w1.png").convert_alpha()
-        # img = pg.image.load("./images/tanks/outputfolder/tank_model_1_3_w1.png").convert_alpha()
-        img = pg.image.load("/tmp/turret.png").convert_alpha()
+        img = pg.image.load("./images/tanks/outputfolder/tank_model_1_3_w1.png").convert_alpha()
+        # img = pg.image.load("/tmp/turret.png").convert_alpha()
         self.master_img = pg.transform.scale( img, (img.get_width() * TURRET_SCALE, img.get_height() * TURRET_SCALE))
         self.img = pg.transform.scale( img, (img.get_width() * TURRET_SCALE, img.get_height() * TURRET_SCALE))
 
@@ -397,7 +397,7 @@ while active:
 
     if GAME_START == False:
         clean_bg()
-        pg.draw.rect(screen, RED, [SCREEN_WID/2 -(300/2),SCREEN_HIG/2, 300, 200] )
+        # pg.draw.rect(screen, RED, [SCREEN_WID/2 -(300/2),SCREEN_HIG/2, 300, 200] )
         start_button.draw()
         start_button.update()
     else:

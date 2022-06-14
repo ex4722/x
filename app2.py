@@ -52,7 +52,7 @@ for i in range(1,6):
     explosion_images.append ( pg.image.load(f"./images/explosion/exp{i}.png").convert_alpha())
 print(explosion_images)
 
-background_image = pg.image.load("/home/ex4722/coding/python/tanked/img/transparent PNG/Full-background.png")
+background_image = pg.image.load("./img/transparent PNG/Full-background.png")
 background_image = pg.transform.scale(background_image, (SCREEN_WID, SCREEN_HIG) )
 
 
